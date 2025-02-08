@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Планшет</title>
+    <!-- <link rel="stylesheet" href="/static/styles.css"> -->
+
+</head>
+<body>
+
+
+
+
+<a href="/logout"><button>Выход</button></a>
+
+<div class="Global">
+
+    
+
+    
+    <div class="Container">
+
+            <div class="top">
+
+                <a href="{{ url_for('history') }}">
+                    <img class="historyIcon" src="{{ url_for('static', filename='images/history.png') }}" alt="Example Image">
+                </a>
+                
+            </div>
+
+            <div class="Main"> 
+
+                <h1 class="title"> Отсканируйте <br> QR-код</h1>
+
+                <img class="qr" id="qr" src="data:image/png;base64,{{img_base64}}" alt="QR Code" >
+                
+                <!-- <img class="qr" src="{{ url_for('static', filename='images/qr.png') }}" alt="Example Image"> -->
+
+                
+                <div id="status"></div>
+
+                <!-- <h1 class="another">Другие способы</h1> -->
+
+
+                <!-- <button class="button_join-onphone">
+                    Вход по номеру
+                </button> -->
+            </div>
+
+        </div>
+
+</div>
+    
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+            html, body {
+                overflow: hidden;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            
+            * {
+              font-weight: 400;
+            font-family: 'Inter', sans-serif;  
+                
+            }
+            
+            #status {
+                margin-top: 30px;
+                font-size: clamp(16px, 5vw, 70px);
+                text-align: center;
+            }
+            
+            .success {
+                color: green;
+            }
+            
+            .error {
+                color: red;
+            }
+            
+            .Global{
+                display: flex;
+                flex-direction: row;
+                justify-content: space-around;
+            }
+            
+            .Container {
+                display: flex;
+                flex-direction: column;
+                justify-content: center; 
+                flex: 1;
+
+            }
+          
+            
+            .Main{
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+
+            }
+           
+            h1{
+                font-size: clamp(25px, 4vw, 40px);
+                text-align: center;
+                font-weight: 600;
+            
+            }
+            
+            .title{
+                font-size: clamp(25px, 5vw, 60px);
+                font-weight: 600;
+                /* margin-top: 120px; */
+                margin: 0;
+            }
+            
+            .top {
+                display: flex;
+                flex-direction: row;
+                justify-content: end;
+                align-items: center;
+            } 
+                
+            .historyIcon {
+                width: clamp(30px, 4vw, 50px);
+                height: clamp(30px, 4vw, 50px);
+                margin-inline-end: 10px;
+            } 
+            
+            .logoutButton {
+                margin-left: 0px;
+            }
+            
+           
+            
+            button{
+                font-size: clamp(16px, 3vw, 40px);
+                border: none;
+                background-color: #0cdd79;
+                background-size: contain ;
+                background-repeat: no-repeat;
+                background-position: 15px;
+                background-size: clamp(20px, 3vw, 50px);
+                border-radius: 10px;
+                color: white;
+                padding-inline: 45px;
+                padding-block: 20px;
+            }
+            .button_join-onphone{
+             background-color: #f7f7f7;
+            }
+            
+            .another{
+                font-size: clamp(16px, 3vw, 40px);
+            }
+
+            @media (max-width: 480px) {
+                .qr {
+                    width:clamp(320px, 60vw, 65vw);
+                    height:clamp(320px, 60vw, 65vw);
+                }
+            }
+            </style>
+
+
+
+
+</body>
+</html>

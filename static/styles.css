@@ -1,0 +1,147 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+html, body {
+    overflow: hidden;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+* {
+  font-weight: 400;
+    font-family: 'Inter', sans-serif;  
+    
+}
+
+.Container {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    justify-content: center; 
+}
+
+.Main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1{
+    font-size: clamp(25px, 4vw, 40px);
+    text-align: center;
+    font-weight: 600;
+}
+
+
+button{
+    font-size: clamp(16px, 3vw, 40px);
+    border: none;
+    background-color: #0cdd79;
+    background-image: url(./images/iphone.png);
+    background-size: contain ;
+    background-repeat: no-repeat;
+    background-position: 15px;
+    background-size: clamp(20px, 3vw, 50px);
+    border-radius: 10px;
+    color: white;
+    padding-inline: 45px;
+    padding-block: 20px;
+}
+
+
+
+
+/* Клиентская часть */
+
+.logoIcon{
+   margin-block: 20%;
+   width: 45%;
+   height: 45%;
+}
+.title{
+    font-size: clamp(25px, 7vw, 80px);
+    font-weight: 400;
+}
+.client_button{
+    background-image: url(./images/qr-code.png);
+}
+
+p{
+    font-size: clamp(16px, 3vw, 40px);
+    text-align: center;
+}
+
+.client_form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+.client_input{
+    width: 100%;
+    border-radius: 10px;
+    font-size:  clamp(16px, 3.5vw, 40px);
+    border: 2px solid black;
+    padding-block:13px;
+    padding-inline: 10px;
+    font-size: clamp(16px, 4.5vw, 60px);
+
+}
+.client_input::placeholder{
+    font-size: clamp(16px, 4.5vw, 60px);
+    color: black;
+}
+.client_button-submit{
+    background-image: none;
+    border: 2px solid #0cdd79;
+    padding-block: 15px;
+    padding-inline: 80px; 
+    width: 108%;
+}
+
+
+
+/* succsess  */
+
+
+
+.circleIcon {
+    width: 300px; /* Убедитесь, что задаете точные размеры */
+    height: 300px;
+    position: relative; /* Для позиционирования вложенных элементов */
+    overflow: hidden; /* Чтобы элементы не выходили за пределы контейнера */
+}
+
+/* Фон SVG */
+.svgBackground {
+    background-image: url("./images/circle_green.svg");
+    background-size: contain;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1; /* Фон на заднем плане */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* GIF изображение */
+.gifIcon {
+    width: 50%; /* Настрой размер GIF */
+    height: 50%;
+    position: absolute; /* Оставляем абсолютное позиционирование */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Центрируем GIF */
+    z-index: 2; /* GIF на переднем плане */
+}
+
+.organization-name{
+    text-align: center;
+    font-weight: 600;
+    font-size: clamp(30px, 5.5vw, 70px);
+}

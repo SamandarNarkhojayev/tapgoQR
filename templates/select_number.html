@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выбор клиента</title>
+
+</head>
+<body>
+<!-- <a href="/logout"><button>Выход</button></a> -->
+
+
+    
+    <form method="GET" action="{{ url_for('select_number') }}">
+        
+        <div class="name_and_logout">
+            <h1>{{ manager_name }}  </h1>
+          
+            <a href="/logout">
+                <img class="logout" src="{{ url_for('static', filename='images/close.svg') }}" alt="close">
+            </a>
+        </div>
+
+        <input type="text" name="phone" id="phone_number" value="{{ phone_query }}" placeholder="Введите номер">
+        <button type="submit">Найти</button>
+    </form>
+    
+    <div class="client-container">
+        {% for client in clients %}
+        <div class="client-row">
+            <div class="client-info">
+                <span>{{ loop.index }}.</span> <!-- Счетчик -->
+                <span>{{ client[0] }} {{ client[1][0] ~ '.' if client[1] else '' }}</span>
+            </div>
+            <div class="client-phone">
+                <a href="{{ url_for('select_organization', number=client[2]) }}">
+                {{ client[2] }} <!-- Номер телефона -->
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+<style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+        * {
+        font-weight: 500;
+        font-family: 'Inter', sans-serif;  
+        }
+
+       html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        }
+
+      
+        .name_and_logout{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logout {
+        position: absolute;
+        right: 10px;
+        top: 15px;
+        width: clamp(30px, 5vw, 70px);
+        cursor: pointer;
+        }
+        
+       
+        h1{
+            color: white;
+        }
+
+        form{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #37c350;
+            padding-block: 30px;
+
+        }
+        input{
+            padding-block: 15px;
+            border: none;
+            border-radius: 10px;
+            width: 70%;
+            font-size: 16px;
+        }
+        input::placeholder{
+            color: grey;
+            padding-left: 10px;
+        }
+        button{
+            background-color: #fed42a;
+            border: none;
+            width: max-content;
+            padding-inline: 70px;
+            padding-block: 15px;
+            margin-top: 30px;
+            font-size: 20px;
+            border-radius: 10px;
+        }
+
+        .client-container {
+            margin-inline: 4vw;
+        }
+        .client-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-block: 15px;
+            border-bottom:1px solid grey;
+        }
+    
+        .client-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+
+        }
+
+        span{
+            font-size: clamp(20px, 3vw, 5vw);
+            font-weight: 400;
+        }
+        a{
+            font-size: clamp(20px, 3vw, 5vw);
+            text-decoration: none;
+            color: black;
+        }
+        .visit-info img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    
+        .visit-time {
+            font-size: clamp(10px, 2vw, 2.5rem);
+            font-weight: 400;
+        }
+</style>
+
+<script>
+  
+    document.getElementById("phone_number").addEventListener("input", function (e) {
+    let input = e.target;
+    let numbers = input.value.replace(/\D/g, ""); // Оставляем только цифры
+
+    if (numbers.startsWith("7")) {
+        numbers = numbers.substring(1); // Убираем лишнюю 7, если ввели вручную
+    }
+
+    // Форматируем номер
+    let formatted = "+7";
+    if (numbers.length > 0) formatted += " (" + numbers.substring(0, 3);
+    if (numbers.length >= 4) formatted += ") " + numbers.substring(3, 6);
+    if (numbers.length >= 7) formatted += " " + numbers.substring(6, 8);
+    if (numbers.length >= 9) formatted += " " + numbers.substring(8, 10);
+
+    input.value = formatted;
+});
+</script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>success</title>
+    <link rel="stylesheet" href="/static/styles.css">
+
+</head>
+<body>
+    
+    <div class="Container">
+        <div class="top">
+    
+                <!-- Иконка истории -->
+                <img class="historyIcon" src="{{ url_for('static', filename='images/history.png') }}" alt="Example Image">
+            
+        </div>
+
+            <div class="Main"> 
+
+                  <!-- Контейнер для фона SVG и GIF -->
+        <div class="circleIcon">
+            <!-- Фоновое изображение SVG -->
+            <div class="svgBackground"></div>
+            <!-- GIF изображение -->
+            <img class="gifIcon" src="{{ url_for('static', filename='images/okay.gif') }}" alt="Example Image">
+        </div>
+                
+                <div>
+                    <h1> Успешно!</h1>
+                    <h3>
+                        Добро пожаловать в
+                    </h3>
+                    <h3>
+                        {{ place_name }}
+                    </h3>
+                </div>
+
+            
+                <button class="button_go-home">
+                   На главную
+                </button>
+            </div>
+
+       
+    </div>
+
+    <script type="text/javascript">
+        // Через 3 секунды перенаправляем назад на страницу с QR-кодом
+        setTimeout(function() {
+            window.location.href = "{{ url_for('admin_qr') }}";  // URL, на который нужно вернуть
+        }, 3000);  // 3000 миллисекунд = 3 секунды
+    </script>
+
+
+
+    <!-- {{ place_name }} -->
+  
+</body>
+</html>

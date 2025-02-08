@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>success</title>
+    <link rel="stylesheet" href="/static/styles.css">
+
+</head>
+<body>
+    
+    <div class="Container">
+        
+
+            <div class="Main"> 
+
+                  <!-- Контейнер для фона SVG и GIF -->
+        <div class="circleIcon">
+            <!-- Фоновое изображение SVG -->
+            <div class="svgBackground"></div>
+            <!-- GIF изображение -->
+            <img class="gifIcon" src="{{ url_for('static', filename='images/okay.gif') }}" alt="Example Image">
+        </div>
+                
+                <div>
+                    <h1> Успешно!</h1>
+                    <h3>
+                        Добро пожаловать в
+                    </h3>
+                    <h2 class="organization-name">
+                        {{ organization_name }}
+                    </h2>
+                        {{ visit_time }}
+                </div>
+
+            
+            </div>
+
+       
+    </div>
+
+
+
+
+    
+
+</body>
+</html>

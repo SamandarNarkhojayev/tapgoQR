@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История посещений</title>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Посетители</h1>
+        <a href="{{ url_for('admin_qr') }}">
+            <img class="close-button" src="{{ url_for('static', filename='images/close.svg') }}" alt="close">
+        </a>
+    </div>
+
+    <form method="GET" action="{{ url_for('history') }}">
+        <input type="hidden" name="org_id" value="{{ org_id }}">
+        <button type="submit" name="date_filter" value="today" 
+            class="{% if date_filter == 'today' %}active{% endif %}">Сегодня</button>
+        <button type="submit" name="date_filter" value="yesterday" 
+            class="{% if date_filter == 'yesterday' %}active{% endif %}">Вчера</button>
+        <button type="submit" name="date_filter" value="week" 
+            class="{% if date_filter == 'week' %}active{% endif %}">За неделю</button>
+        <button type="submit" name="date_filter" value="all" 
+            class="{% if date_filter == 'all' %}active{% endif %}">Все время</button>
+    </form>
+
+
+
+    {% if display_date %}
+    <p class="date">{{ display_date }}</p>
+    {% endif %}
+
+
+
+    <div class="visit-container">
+        {% for visit in visits %}
+        <div class="visit-row">
+            <div class="visit-info">
+                <img src="{{ visit[3] if visit[3] else url_for('static', filename='images/user.png') }}" 
+                    alt="User Image">
+                <span>{{ visit[0] }} {{ visit[1][0] ~ '.' if visit[1] else '' }}</span>
+            </div>
+            <div class="visit-time">
+                {{ visit[2].strftime('%H ч. %M мин.') }}
+                {% if date_filter in ["week", "all"] %}
+                     / {{ visit[2].strftime('%d %B') }}
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <style> 
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+        * {
+        font-weight: 500;
+        font-family: 'Inter', sans-serif;  
+        }
+
+       html, body {
+
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        }
+
+    .header {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+    .header h1{
+        font-size: clamp(20px, 4vw, 2.5rem);
+    }
+
+    .close-button {
+        position: absolute;
+        right: 10px;
+        top: 15px;
+        width: clamp(30px, 5vw, 70px);
+        /* height: calc(); */
+        cursor: pointer;
+    }
+
+        form{
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            background-color: #f7f7f7;
+            padding-block: 30px;
+            }
+
+        button{
+            border: none;
+            background-color: transparent;
+            color : black;
+            padding-inline: 3vw;
+            padding-block: 1.3vh;
+            border-radius: 30px;
+            font-size: clamp(10px, 2vw, 2.5rem);
+            text-wrap: nowrap;
+            transition: background-color 0.3s ease, color 0.3s ease;
+
+        }
+        .active {
+            background-color: #0cdd79; /* Зеленый фон */
+            color: white;
+        }
+
+        .date{
+            display: flex;
+            justify-content: space-between;
+            text-align: left;
+            margin-inline-start: 5vw ;
+            color: #0cdd79;
+            font-weight: 600;
+            font-size: 1.3rem;
+        }
+
+        .visit-container {
+            margin-inline: 4vw;
+        }
+        .visit-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+
+        }
+    
+        .visit-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        span{
+            font-size: clamp(10px, 2vw, 2.5rem);
+            font-weight: 400;
+        }
+    
+        .visit-info img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    
+        .visit-time {
+            font-size: clamp(10px, 2vw, 2.5rem);
+            font-weight: 400;
+        }
+       
+    </style>
+    
+    
+    
+</body>
+</html>

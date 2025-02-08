@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выбор организации</title>
+    <style>
+        .copy-feedback {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background-color: rgba(0, 128, 0, 0.7);
+            color: white;
+            border-radius: 5px;
+            font-size: 16px;
+            z-index: 1000;
+        }
+    </style>
+    <script>
+        function generateAndCopyLink(number, orgId) {
+            // Генерация ссылки с уникальным токеном
+            const token = Math.random().toString(36).substring(2, 15); // Генерация простого токена
+            const clientUrl = `${window.location.origin}/client?number=${number}&org_id=${orgId}&token=${token}`;
+            
+            // Используем Clipboard API для копирования
+            navigator.clipboard.writeText(clientUrl).then(() => {
+                // Показать уведомление
+                const feedback = document.getElementById('copy-feedback');
+                feedback.style.display = 'block';
+
+                // Скрыть уведомление через 2 секунды
+                setTimeout(() => {
+                    feedback.style.display = 'none';
+                }, 2000);
+            });
+        }
+    </script>
+</head>
+<body>
+
+<!-- <h1>Выбор организации для номера {{ number }}</h1> -->
+
+<form method="GET" action="{{ url_for('select_organization') }}">
+    <h1>{{client_name}}</h1>
+    <a href="/select_number">
+        <img class="logout" src="{{ url_for('static', filename='images/close.svg') }}" alt="close">
+    </a>
+
+    <input type="hidden" name="number" value="{{ number }}">
+    <input type="text" name="search" value="{{ search_query }}" placeholder="Название или id организации">
+    <button class="search-button" type="submit">Искать</button>
+</form>
+
+<!-- Список организаций -->
+{% for org in organizations %}
+    <div class="organizations-container">
+        <span>{{ loop.index }}. {{ org[1] }} (ID: {{ org[0] }})</span>
+        <button class="copy_button" onclick="generateAndCopyLink('{{ number }}', '{{ org[0] }}')"></button>
+    </div>
+{% endfor %}
+
+<!-- Уведомление об успешном копировании -->
+<div id="copy-feedback" class="copy-feedback">Ссылка скопирована!</div>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+    * {
+        font-weight: 500;
+        font-family: 'Inter', sans-serif;
+    }
+
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .name_and_logout {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logout {
+        position: absolute;
+        right: 10px;
+        top: 15px;
+        width: clamp(30px, 5vw, 70px);
+        cursor: pointer;
+    }
+
+    h1 {
+        color: white;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #37c350;
+        padding-block: 30px;
+    }
+
+    span {
+        font-size: clamp(20px, 3vw, 5vw);
+        font-weight: 400;
+    }
+
+    input {
+        padding-block: 15px;
+        border: none;
+        border-radius: 10px;
+        width: 70%;
+        font-size: 16px;
+    }
+
+    input::placeholder {
+        color: grey;
+        padding-left: 10px;
+    }
+
+    .search-button {
+        background-color: #fed42a;
+        border: none;
+        width: max-content;
+        padding-inline: 70px;
+        padding-block: 15px;
+        margin-top: 30px;
+        font-size: 20px;
+        border-radius: 10px;
+    }
+
+    .copy_button {
+        background-image: url(../static/images/copy-alt.png);
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        width: 40px;
+        height: 40px;
+        border: none;
+        cursor: pointer;
+        background-color: transparent;
+    }
+
+    .organizations-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-inline: 30px;
+        padding-block: 10px;
+        border-bottom: 1px solid grey;
+        margin-inline: 4vw;
+    }
+</style>
+</body>
+</html>
