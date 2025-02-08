@@ -81,7 +81,7 @@ def admin_qr():
         return redirect(url_for('login'))  # Перенаправление на вход
     
     organization_id = session['organization_id']
-    qr_data = f"https://9c35-37-151-83-167.ngrok-free.app/client?org_id={organization_id}"
+    qr_data = f"https://tapgolive.kz/client?org_id={organization_id}"
 
     # Создаём QR-код с высокой коррекцией ошибок
     qr = qrcode.QRCode(
@@ -417,7 +417,7 @@ def generate_link():
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, host="0.0.0.0", port=5002)
+    socketio.run(app, debug=True, host="0.0.0.0", port=80)
 
 
 
