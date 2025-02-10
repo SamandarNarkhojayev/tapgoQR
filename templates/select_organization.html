@@ -62,7 +62,7 @@
 <!-- Список организаций -->
 {% for org in organizations %}
     <div class="organizations-container">
-        <span>{{ loop.index }}. {{ org[1] }} (ID: {{ org[0] }})</span>
+        <span>{{ loop.index }}. {{ org[1] }} </span>
         <button class="copy_button" onclick="generateAndCopyLink('{{ number }}', '{{ org[0] }}')"></button>
     </div>
 {% endfor %}
