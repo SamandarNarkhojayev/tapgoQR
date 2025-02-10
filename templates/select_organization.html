@@ -21,9 +21,8 @@
     </style>
     <script>
         function generateAndCopyLink(number, orgId) {
-            // Генерация ссылки с уникальным токеном
-            const token = Math.random().toString(36).substring(2, 15); // Генерация простого токена
-            const clientUrl = `${window.location.origin}/client?number=${number}&org_id=${orgId}&token=${token}`;
+            // Генерация ссылки
+            const clientUrl = `${window.location.origin}/client?number=${number}&org_id=${orgId}`;
             
             // Используем Clipboard API для копирования
             navigator.clipboard.writeText(clientUrl).then(() => {
@@ -43,16 +42,22 @@
 
 <!-- <h1>Выбор организации для номера {{ number }}</h1> -->
 
+
+
 <form method="GET" action="{{ url_for('select_organization') }}">
+
     <h1>{{client_name}}</h1>
-    <a href="/select_number">
-        <img class="logout" src="{{ url_for('static', filename='images/close.svg') }}" alt="close">
-    </a>
+        <a href="/select_number">
+            <img class="logout" src="{{ url_for('static', filename='images/close.svg') }}" alt="close">
+        </a>
+        </div>
+
 
     <input type="hidden" name="number" value="{{ number }}">
     <input type="text" name="search" value="{{ search_query }}" placeholder="Название или id организации">
     <button class="search-button" type="submit">Искать</button>
 </form>
+
 
 <!-- Список организаций -->
 {% for org in organizations %}
@@ -66,94 +71,91 @@
 <div id="copy-feedback" class="copy-feedback">Ссылка скопирована!</div>
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-    * {
+          @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+        * {
         font-weight: 500;
-        font-family: 'Inter', sans-serif;
-    }
+        font-family: 'Inter', sans-serif;  
+        }
 
-    html, body {
+       html, body {
         height: 100%;
         margin: 0;
         padding: 0;
-    }
+        }
 
-    .name_and_logout {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .logout {
+      
+        .name_and_logout{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logout {
         position: absolute;
         right: 10px;
         top: 15px;
         width: clamp(30px, 5vw, 70px);
         cursor: pointer;
-    }
+        }
+        
+       
+        h1{
+            color: white;
+        }
 
-    h1 {
-        color: white;
-    }
+        form{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #37c350;
+            padding-block: 30px;
 
-    form {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background-color: #37c350;
-        padding-block: 30px;
-    }
+        }
+        span{
+            font-size: clamp(20px, 3vw, 5vw);
+            font-weight: 400;
+        }
+        input{
+            padding-block: 15px;
+            border: none;
+            border-radius: 10px;
+            width: 70%;
+            font-size: 16px;
+        }
+        input::placeholder{
+            color: grey;
+            padding-left: 10px;
+        }
+        .search-button{
+            background-color: #fed42a;
+            border: none;
+            width: max-content;
+            padding-inline: 70px;
+            padding-block: 15px;
+            margin-top: 30px;
+            font-size: 20px;
+            border-radius: 10px;
+        }
+        .copy_button{
+            background-image: url(../static/images/copy-alt.png);
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            width: 40px;
+            height: 40px;
+            border: none;
+            cursor: pointer;
+            background-color: transparent;
+        }
+        .organizations-container{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-inline: 30px;
+            padding-block: 10px ;
+            border-bottom: 1px solid grey;
+            margin-inline: 4vw;
+        }
 
-    span {
-        font-size: clamp(20px, 3vw, 5vw);
-        font-weight: 400;
-    }
-
-    input {
-        padding-block: 15px;
-        border: none;
-        border-radius: 10px;
-        width: 70%;
-        font-size: 16px;
-    }
-
-    input::placeholder {
-        color: grey;
-        padding-left: 10px;
-    }
-
-    .search-button {
-        background-color: #fed42a;
-        border: none;
-        width: max-content;
-        padding-inline: 70px;
-        padding-block: 15px;
-        margin-top: 30px;
-        font-size: 20px;
-        border-radius: 10px;
-    }
-
-    .copy_button {
-        background-image: url(../static/images/copy-alt.png);
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-position: center;
-        width: 40px;
-        height: 40px;
-        border: none;
-        cursor: pointer;
-        background-color: transparent;
-    }
-
-    .organizations-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding-inline: 30px;
-        padding-block: 10px;
-        border-bottom: 1px solid grey;
-        margin-inline: 4vw;
-    }
 </style>
 </body>
 </html>

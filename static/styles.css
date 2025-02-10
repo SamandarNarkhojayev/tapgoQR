@@ -143,5 +143,8 @@ p{
 .organization-name{
     text-align: center;
     font-weight: 600;
-    font-size: clamp(30px, 5.5vw, 70px);
+    /* font-size: clamp(30px, 3.5vw, 70px); */
+}
+.other-text{
+    text-align: center;
 }
