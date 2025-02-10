@@ -137,41 +137,39 @@ def client():
     visit_id = None
     phone_number = None
     
-    # Получаем номер из формы или параметров URL
     if request.method == 'POST':
-        phone_number = request.form['phone_number']  # Получаем номер из формы
+        phone_number = request.form.get('phone_number')  
     elif request.method == 'GET':
-        phone_number = request.args.get('number')  # Получаем номер из параметров URL
+        phone_number = request.args.get('number')  
 
     if phone_number:
-        # Нормализуем номер телефона, чтобы сравнение было корректным
         phone_number = normalize_phone_number(phone_number)
 
         conn = get_auth_db_connection()
         cursor = conn.cursor()
 
-        # Проверяем, есть ли такой номер в базе данных
         cursor.execute("SELECT id, name, surname, end_subscription FROM users WHERE phone = %s", (phone_number,))
         users = cursor.fetchone()
 
-        # Проверяем, существует ли организация
         cursor.execute("SELECT id, name FROM organizations WHERE id = %s", (org_id,))
         organization = cursor.fetchone()
 
-        if users and organization:
-            # Получаем дату окончания абонемента
-            end_subscription = users[3]
+        print(f"DEBUG: users={users}, organization={organization}")  # Отладочный вывод
 
-            # Проверяем, не истек ли абонемент
+        if users and organization:
+            end_subscription = users[3]
             if end_subscription and end_subscription.date() < datetime.now().date():
-                # Если абонемент истек
                 return "<h1>Ошибка: ваш абонемент завершен!</h1>", 400
-            
-            # Создаем запись о посещении, если абонемент активен
+
+            # Получаем текущее время по Алматы
+            almaty_tz = pytz.timezone('Asia/Tokyo')
+            current_time = datetime.now(almaty_tz)
+
+            # Вставляем запись о посещении
             cursor.execute(
-                "INSERT INTO visits (user_id, organization_id, client_first_name, client_last_name, organization_name, status) "
-                "VALUES (%s, %s, %s, %s, %s, 'pending') RETURNING id",
-                (users[0], org_id, users[1], users[2], organization[1])
+                "INSERT INTO visits (user_id, organization_id, client_first_name, client_last_name, organization_name, status, visit_time) "
+                "VALUES (%s, %s, %s, %s, %s, 'pending', %s) RETURNING id",
+                (users[0], org_id, users[1], users[2], organization[1], current_time)
             )
 
             visit_id = cursor.fetchone()[0]
@@ -180,18 +178,12 @@ def client():
 
             socketio.emit('client_verified', {'organization_id': org_id}, room=org_id)
 
-            # Если номер передан через URL, сразу перенаправляем на страницу good_client с visit_id
-            if request.method == 'GET':
-                return redirect(url_for('good_client', visit_id=visit_id))
-            elif request.method == 'POST':
-                return redirect(url_for('good_client', visit_id=visit_id))
+            return redirect(url_for('good_client', visit_id=visit_id))
 
         else:
             return "<h1>Ошибка: клиент или организация не найдены!</h1>", 404
 
     return render_template("client.html", org_id=org_id)
-
-
 
 @app.route('/good_client/<int:visit_id>', methods=['GET'])
 def good_client(visit_id):
@@ -212,18 +204,7 @@ def good_client(visit_id):
     if visit_data:
         client_first_name, client_last_name, organization_name, visit_time = visit_data
         # Преобразуем время в нужный формат
-
-        # Устанавливаем временную зону UTC+5
-        tz = pytz.timezone('Asia/Almaty')  # или 'Asia/Omsk', если нужен именно этот часовой пояс
-
-        # Получаем текущее время в UTC
-        utc_now = datetime.now(pytz.utc)
-
-        # Переводим время в нужную временную зону
-        local_time = utc_now.astimezone(tz)
-
-        # Конвертируем в строку для записи в базу
-        visit_time = local_time.strftime('%Y-%m-%d %H:%M:%S')
+        visit_time = visit_time.strftime('%Y-%m-%d %H:%M:%S')
         return render_template('good_client.html', visit_id=visit_id, 
                                client_first_name=client_first_name, 
                                client_last_name=client_last_name, 
@@ -321,8 +302,6 @@ def history():
                            org_id=org_id, 
                            date_filter=date_filter, 
                            display_date=display_date)
-
-
 
 
 @app.route('/select_number', methods=['GET'])
