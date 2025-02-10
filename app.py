@@ -1,7 +1,4 @@
-
-# ПРЕЗИНТАЦИЯ
 import re
-
 from flask import Flask, render_template, request, jsonify, Response, redirect, url_for, session, flash,send_file
 from flask_caching import Cache
 import psycopg2
@@ -18,6 +15,7 @@ from PIL import Image
 import os
 import dotenv
 dotenv.load_dotenv()
+import pytz
 
 locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
 
@@ -81,7 +79,7 @@ def admin_qr():
         return redirect(url_for('login'))  # Перенаправление на вход
     
     organization_id = session['organization_id']
-    qr_data = f"https://tapgolive.kz/client?org_id={organization_id}"
+    qr_data = f"https://ef35-2-134-191-217.ngrok-free.app/client?org_id={organization_id}"
 
     # Создаём QR-код с высокой коррекцией ошибок
     qr = qrcode.QRCode(
@@ -214,7 +212,18 @@ def good_client(visit_id):
     if visit_data:
         client_first_name, client_last_name, organization_name, visit_time = visit_data
         # Преобразуем время в нужный формат
-        visit_time = visit_time.strftime('%Y-%m-%d %H:%M:%S')
+
+        # Устанавливаем временную зону UTC+5
+        tz = pytz.timezone('Asia/Almaty')  # или 'Asia/Omsk', если нужен именно этот часовой пояс
+
+        # Получаем текущее время в UTC
+        utc_now = datetime.now(pytz.utc)
+
+        # Переводим время в нужную временную зону
+        local_time = utc_now.astimezone(tz)
+
+        # Конвертируем в строку для записи в базу
+        visit_time = local_time.strftime('%Y-%m-%d %H:%M:%S')
         return render_template('good_client.html', visit_id=visit_id, 
                                client_first_name=client_first_name, 
                                client_last_name=client_last_name, 
@@ -312,6 +321,7 @@ def history():
                            org_id=org_id, 
                            date_filter=date_filter, 
                            display_date=display_date)
+
 
 
 
