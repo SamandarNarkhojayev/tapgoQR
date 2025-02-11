@@ -4,17 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Планшет</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+<script>
+    const socket = io.connect("http://127.0.0.1:8080");
+
+    // Слушаем событие, когда клиент подтвердился
+    socket.on("client_confirmed", (data) => {
+        console.log("🚀 Клиент подтвержден:", data);
+        if (data.org_id === "{{ current_org_id }}") {
+            window.location.href = "/good/" + data.visit_id;
+        }
+    });
+</script>
+
+
+
+
+</script>
 
 </head>
 <body>
 
 
-
 <div class="Global">
 
-    
-
-    
     <div class="Container">
 
             <div class="top">

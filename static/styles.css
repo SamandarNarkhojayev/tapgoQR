@@ -104,7 +104,12 @@ p{
 
 /* succsess  */
 
-
+      
+.historyIcon {
+    width: 20px;
+    height: 20px;
+    margin-inline-end: 10px;
+} 
 
 .circleIcon {
     width: 300px; /* Убедитесь, что задаете точные размеры */

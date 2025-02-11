@@ -16,6 +16,7 @@ import os
 import dotenv
 dotenv.load_dotenv()
 import pytz
+import secrets
 
 locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
 
@@ -23,7 +24,12 @@ locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 socketio = SocketIO(app, cors_allowed_origins="*")
+
 cache = Cache(app, config={"CACHE_TYPE": "simple"})
+
+active_tokens = {}  # Текущие активные токены для организаций
+used_tokens = set()  # Уже использованные токены
+admin_status = {}  # Статус подтверждения клиента
 
 
 # Подключение к базе данных для авторизации (для проверки данных входа)
@@ -73,18 +79,25 @@ def login():
     return render_template('login.html')
 
 
-@app.route('/')
+@app.route("/")
 def admin_qr():
-    if 'organization_id' not in session:
-        return redirect(url_for('login'))  # Перенаправление на вход
-    
-    organization_id = session['organization_id']
-    qr_data = f"https://ef35-2-134-191-217.ngrok-free.app/client?org_id={organization_id}"
+    if "organization_id" not in session:
+        return redirect(url_for("login"))  # Перенаправление на страницу входа
 
-    # Создаём QR-код с высокой коррекцией ошибок
+    organization_id = session["organization_id"]
+
+    # Проверяем, есть ли у организации активный токен и не использован ли он
+    if organization_id not in active_tokens or active_tokens[organization_id] in used_tokens:
+        token = secrets.token_urlsafe(16)
+        active_tokens[organization_id] = token
+        admin_status[organization_id] = False  # Сбрасываем статус админа
+
+    qr_data = f"http://127.0.0.1:8080/client?token={active_tokens[organization_id]}&org_id={organization_id}"
+
+    # Создаем QR-код с высокой коррекцией ошибок
     qr = qrcode.QRCode(
         version=5,
-        error_correction=qrcode.constants.ERROR_CORRECT_H,  # H = 30% коррекции (чтобы лого не мешало сканированию)
+        error_correction=qrcode.constants.ERROR_CORRECT_H,  # 30% коррекции ошибок
         box_size=10,
         border=4,
     )
@@ -94,36 +107,31 @@ def admin_qr():
     # Генерируем QR-код как изображение
     qr_img = qr.make_image(fill="black", back_color="white").convert("RGBA")
 
-    # Загружаем логотип
+    # Добавляем логотип, если он есть
+    logo_path = "static/images/icon.png"
+    
+    if os.path.exists(logo_path):  # Проверяем существование файла
+        try:
+            logo = Image.open(logo_path)
+            qr_width, qr_height = qr_img.size
+            logo_size = qr_width // 4  # Логотип занимает 1/4 QR-кода
 
-    logo_path = "static/images/icon.png"  # Путь к логотипу
+            logo = logo.resize((logo_size, logo_size))
+            logo_position = ((qr_width - logo_size) // 2, (qr_height - logo_size) // 2)
 
+            qr_img.paste(logo, logo_position, mask=logo)  # Учитываем прозрачность
+        except Exception as e:
+            print(f"Ошибка при загрузке логотипа: {e}")
 
-
-    logo = Image.open(logo_path)
-
-    # Изменяем размер логотипа (примерно 20% от размера QR-кода)
-    qr_width, qr_height = qr_img.size
-    logo_size = qr_width // 4  # 1/4 от QR-кода
-
-    logo = logo.resize((logo_size, logo_size))
-
-
-    # Вычисляем позицию логотипа (центр QR-кода)
-    logo_position = ((qr_width - logo_size) // 2, (qr_height - logo_size) // 2)
-
-    # Накладываем логотип на QR-код
-
-    qr_img.paste(logo, logo_position)
-
-
-    # Конвертируем в base64
+    # Конвертируем в base64 для вставки в HTML
     img_io = io.BytesIO()
-    qr_img.save(img_io, format='PNG')
+    qr_img.save(img_io, format="PNG")
     img_io.seek(0)
-    img_base64 = base64.b64encode(img_io.getvalue()).decode('utf-8')
+    img_base64 = base64.b64encode(img_io.getvalue()).decode("utf-8")
 
-    return render_template('tablet.html', img_base64=img_base64)
+    return render_template("tablet.html", img_base64=img_base64, current_org_id=session["organization_id"])
+
+
 
 def normalize_phone_number(phone_number):
     # Убираем все нецифровые символы из номера
@@ -131,57 +139,56 @@ def normalize_phone_number(phone_number):
     # Форматируем номер в нужный вид
     return f"+7 ({digits[1:4]}) {digits[4:7]} {digits[7:9]} {digits[9:11]}"
 
-@app.route('/client', methods=['GET', 'POST'])
+@app.route("/client", methods=["GET", "POST"])
 def client():
-    org_id = request.args.get('org_id')
-    visit_id = None
-    phone_number = None
-    
-    if request.method == 'POST':
-        phone_number = request.form.get('phone_number')  
-    elif request.method == 'GET':
-        phone_number = request.args.get('number')  
+    org_id = request.args.get("org_id")
+    token = request.args.get("token")
+
+    if not org_id or not token:
+        return jsonify({"error": "Недействительный QR-код"}), 400
+
+    if token in used_tokens:
+        return jsonify({"error": "Токен уже использован"}), 403
+
+    phone_number = request.form.get("phone_number") or request.args.get("number")
 
     if phone_number:
         phone_number = normalize_phone_number(phone_number)
 
-        conn = get_auth_db_connection()
-        cursor = conn.cursor()
+        with get_auth_db_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute("SELECT id, name, surname, end_subscription FROM users WHERE phone = %s", (phone_number,))
+                user = cursor.fetchone()
 
-        cursor.execute("SELECT id, name, surname, end_subscription FROM users WHERE phone = %s", (phone_number,))
-        users = cursor.fetchone()
+                cursor.execute("SELECT id, name FROM organizations WHERE id = %s", (org_id,))
+                organization = cursor.fetchone()
 
-        cursor.execute("SELECT id, name FROM organizations WHERE id = %s", (org_id,))
-        organization = cursor.fetchone()
+                if user and organization:
+                    user_id, first_name, last_name, end_subscription = user
+                    if end_subscription and end_subscription.date() < datetime.now().date():
+                        return jsonify({"error": "Абонемент завершен!"}), 400
 
-        print(f"DEBUG: users={users}, organization={organization}")  # Отладочный вывод
+                    # Записываем посещение
+                    cursor.execute(
+                        """
+                        INSERT INTO visits (user_id, organization_id, client_first_name, client_last_name, organization_name, status, visit_time)
+                        VALUES (%s, %s, %s, %s, %s, 'pending', %s) RETURNING id
+                        """,
+                        (user_id, org_id, first_name, last_name, organization[1], datetime.now())
+                    )
+                    visit_id = cursor.fetchone()[0]
+                    conn.commit()
 
-        if users and organization:
-            end_subscription = users[3]
-            if end_subscription and end_subscription.date() < datetime.now().date():
-                return "<h1>Ошибка: ваш абонемент завершен!</h1>", 400
+                    # Уведомляем админа через WebSocket
+                    # socketio.emit("client_verified", {"org_id": org_id, "visit_id": visit_id}, room=org_id)
+                    # Делаем токен недействительным
+                    socketio.emit("client_confirmed", {"org_id": org_id, "visit_id": visit_id})
 
-            # Получаем текущее время по Алматы
-            almaty_tz = pytz.timezone('Asia/Tokyo')
-            current_time = datetime.now(almaty_tz)
+                    used_tokens.add(token)
 
-            # Вставляем запись о посещении
-            cursor.execute(
-                "INSERT INTO visits (user_id, organization_id, client_first_name, client_last_name, organization_name, status, visit_time) "
-                "VALUES (%s, %s, %s, %s, %s, 'pending', %s) RETURNING id",
-                (users[0], org_id, users[1], users[2], organization[1], current_time)
-            )
-
-            visit_id = cursor.fetchone()[0]
-            conn.commit()
-            conn.close()
-
-            socketio.emit('client_verified', {'organization_id': org_id}, room=org_id)
-
-            return redirect(url_for('good_client', visit_id=visit_id))
-
-        else:
-            return "<h1>Ошибка: клиент или организация не найдены!</h1>", 404
+                    return redirect(url_for("good_client", visit_id=visit_id))
+                else:
+                    return jsonify({"error": "Клиент или организация не найдены"}), 404
 
     return render_template("client.html", org_id=org_id)
 
@@ -213,14 +220,10 @@ def good_client(visit_id):
     else:
         return "<h1>Ошибка: не найдено посещение!</h1>", 404
 
-
-
-@app.route('/good/<int:visit_id>', methods=['GET'])
+@app.route("/good/<visit_id>")
 def good(visit_id):
-    # Обрабатываем visit_id
-    return render_template('good.html', visit_id=visit_id)
-
-
+    # Обработка успешного визита
+    return render_template("good.html", visit_id=visit_id)
 
 
 
@@ -228,13 +231,6 @@ def good(visit_id):
 def logout():
     session.pop('organization_id', None)  # Удаляем информацию о сессии
     return redirect(url_for('login'))  # Перенаправляем на страницу логина
-
-@socketio.on('join')
-def handle_join(data):
-    organization_id = data.get("organization_id")
-    join_room(organization_id)
-    print(f"✅ Админская страница подключилась к комнате: {organization_id}")
-
 
 
 def get_visits_by_organization(org_id, date_filter="all"):
@@ -406,7 +402,7 @@ def generate_link():
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, host="0.0.0.0", port=80)
+    socketio.run(app, debug=True, host="0.0.0.0", port=8080)
 
 
 

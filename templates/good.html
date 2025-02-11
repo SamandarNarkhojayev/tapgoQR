@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>success</title>
     <link rel="stylesheet" href="/static/styles.css">
-
+    <meta http-equiv="refresh" content="3;url=/">
 </head>
 <body>
     
@@ -32,8 +32,8 @@
                     <h3>
                         Добро пожаловать в
                     </h3>
-                    <h3>
-                        {{ place_name }}
+                    <h3 class="organization-name">
+                        {{ client_first_name }}
                     </h3>
                 </div>
 
@@ -45,13 +45,6 @@
 
        
     </div>
-
-    <script type="text/javascript">
-        // Через 3 секунды перенаправляем назад на страницу с QR-кодом
-        setTimeout(function() {
-            window.location.href = "{{ url_for('admin_qr') }}";  // URL, на который нужно вернуть
-        }, 3000);  // 3000 миллисекунд = 3 секунды
-    </script>
 
 
 
