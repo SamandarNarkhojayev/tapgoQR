@@ -252,6 +252,7 @@ def logout():
     return redirect(url_for('login'))  # Перенаправляем на страницу логина
 
 
+
 def get_visits_by_organization(org_id, date_filter="all"):
     conn = get_auth_db_connection()
     cursor = conn.cursor()
@@ -300,7 +301,7 @@ def history():
         return redirect(url_for('login'))
 
     org_id = session['organization_id']
-    date_filter = request.args.get('date_filter', 'all')  # Фильтр по времени
+    date_filter = request.args.get('date_filter', 'today')  # Фильтр по времени
 
     # Определяем, какую дату отображать
     if date_filter == "today":
