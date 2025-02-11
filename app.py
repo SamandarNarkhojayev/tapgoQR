@@ -31,7 +31,6 @@ active_tokens = {}  # Текущие активные токены для орг
 used_tokens = set()  # Уже использованные токены
 admin_status = {}  # Статус подтверждения клиента
 
-print(used_tokens)
 
 # Подключение к базе данных для авторизации (для проверки данных входа)
 def get_auth_db_connection():
@@ -115,7 +114,7 @@ def admin_qr():
         try:
             logo = Image.open(logo_path)
             qr_width, qr_height = qr_img.size
-            logo_size = qr_width // 4  # Логотип занимает 1/4 QR-кода
+            logo_size = qr_width // 4 # Логотип занимает 1/4 QR-кода
 
             logo = logo.resize((logo_size, logo_size))
             logo_position = ((qr_width - logo_size) // 2, (qr_height - logo_size) // 2)
@@ -177,10 +176,7 @@ def client():
                     )
                     visit_id = cursor.fetchone()[0]
                     conn.commit()
-
-                    # Уведомляем админа через WebSocket
-                    # socketio.emit("client_verified", {"org_id": org_id, "visit_id": visit_id}, room=org_id)
-                    # Делаем токен недействительным
+                    
                     socketio.emit("client_confirmed", {"org_id": org_id, "visit_id": visit_id})
 
                     used_tokens.add(token)
@@ -218,12 +214,6 @@ def good_client(visit_id):
                                visit_time=visit_time)
     else:
         return "<h1>Ошибка: не найдено посещение!</h1>", 404
-
-# @app.route("/good/<visit_id>")
-# def good(visit_id):
-#     # Обработка успешного визита
-#     return render_template("good.html", visit_id=visit_id)
-
 
 @app.route('/good/<int:visit_id>', methods=['GET'])
 def good(visit_id):
@@ -329,6 +319,104 @@ def history():
                            display_date=display_date)
 
 
+# @app.route('/select_number', methods=['GET'])
+# def select_number():
+#     if 'manager_id' not in session:
+#         return redirect(url_for('login'))  # Если нет менеджера в сессии, перенаправляем на вход
+
+#     # Получаем имя менеджера
+#     manager_id = session['manager_id']
+#     conn = get_auth_db_connection()
+#     cursor = conn.cursor()
+
+#     # Получаем имя и фамилию менеджера
+#     cursor.execute("""
+#         SELECT manager_name, manager_last_name
+#         FROM managers
+#         WHERE id = %s
+#     """, (manager_id,))
+#     manager = cursor.fetchone()
+
+#     if manager:
+#         manager_name = f"{manager[0]}"  # Имя и фамилия менеджера
+#     else:
+#         manager_name = "Неизвестный менеджер"  # Если менеджера не нашли, выводим сообщение
+
+#     # Получаем клиентов
+#     phone_query = request.args.get('phone', '')
+#     if phone_query:
+#         cursor.execute("""
+#             SELECT name, surname, phone 
+#             FROM users
+#             WHERE phone LIKE %s
+#         """, (f"%{phone_query}%",))
+#     else:
+#         cursor.execute("""
+#             SELECT name, surname, phone 
+#             FROM users
+#         """)
+    
+#     clients = cursor.fetchall()
+#     conn.close()
+
+#     return render_template('select_number.html', 
+#                            clients=clients, 
+#                            phone_query=phone_query,
+#                            manager_name=manager_name)  # Передаем имя менеджера в шаблон
+
+# @app.route('/select_organization')
+# def select_organization():
+#     if 'manager_id' not in session:
+#         return redirect(url_for('login'))
+
+#     number = request.args.get('number')
+#     search_query = request.args.get('search', '')
+
+#     if not number:
+#         return redirect(url_for('select_number'))
+
+#     conn = get_auth_db_connection()
+#     cursor = conn.cursor()
+
+#     # Получаем имя клиента по номеру
+#     cursor.execute("SELECT name, surname FROM users WHERE phone = %s", (number,))
+#     client = cursor.fetchone()
+
+#     # Поиск организаций по названию
+#     if search_query:
+#         cursor.execute("SELECT id, name FROM organizations WHERE name LIKE %s", (f"%{search_query}%",))
+#     else:
+#         cursor.execute("SELECT id, name FROM organizations")
+
+#     organizations = cursor.fetchall()
+
+#     cursor.close()
+#     conn.close()
+
+#     return render_template(
+#         'select_organization.html',
+#         number=number,
+#         organizations=organizations,
+#         client_name=f"{client[0]} {client[1]}" if client else "Неизвестный клиент",
+#         search_query=search_query
+#     )
+
+
+
+# @app.route('/generate_link')
+# def generate_link():
+#     number = request.args.get('number')
+#     org_id = request.args.get('org_id')
+
+#     if not number or not org_id:
+#         return redirect(url_for('select_number'))
+
+#     client_url = f"{request.host_url}client?number={number}&org_id={org_id}"
+
+#     return render_template('generate_link.html', client_url=client_url)
+
+
+
 @app.route('/select_number', methods=['GET'])
 def select_number():
     if 'manager_id' not in session:
@@ -392,6 +480,12 @@ def select_organization():
     cursor.execute("SELECT name, surname FROM users WHERE phone = %s", (number,))
     client = cursor.fetchone()
 
+    # Генерация нового токена
+    token = secrets.token_urlsafe(16)  # Генерация случайного токена
+
+    # Сохраняем токен во временной переменной (например, словарь active_tokens)
+    active_tokens[token] = number  # Токен связан с номером телефона
+
     # Поиск организаций по названию
     if search_query:
         cursor.execute("SELECT id, name FROM organizations WHERE name LIKE %s", (f"%{search_query}%",))
@@ -408,10 +502,9 @@ def select_organization():
         number=number,
         organizations=organizations,
         client_name=f"{client[0]} {client[1]}" if client else "Неизвестный клиент",
-        search_query=search_query
+        search_query=search_query,
+        token=token  # Передаем токен в шаблон
     )
-
-
 
 @app.route('/generate_link')
 def generate_link():
@@ -421,12 +514,18 @@ def generate_link():
     if not number or not org_id:
         return redirect(url_for('select_number'))
 
-    client_url = f"{request.host_url}client?number={number}&org_id={org_id}"
+    # Генерация уникального токена для этого клиента и организации
+    token = secrets.token_urlsafe(16)  # Генерация уникального токена
 
-    return render_template('generate_link.html', client_url=client_url)
+    # Сохраняем токен в базе данных или в словаре для проверки
+    active_tokens[(org_id, number)] = token
 
+    # Генерация URL с токеном
+    client_url = f"{request.host_url}client?number={number}&org_id={org_id}&token={token}"
 
+    return render_template('generated_link.html', client_url=client_url)
 
+        
 
 
 

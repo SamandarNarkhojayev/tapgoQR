@@ -20,9 +20,9 @@
         }
     </style>
     <script>
-        function generateAndCopyLink(number, orgId) {
+        function generateAndCopyLink(number, orgId, token) {
             // Генерация ссылки
-            const clientUrl = `${window.location.origin}/client?number=${number}&org_id=${orgId}`;
+            const clientUrl = `${window.location.origin}/client?number=${number}&org_id=${orgId}&token=${token}`;
             
             // Используем Clipboard API для копирования
             navigator.clipboard.writeText(clientUrl).then(() => {
@@ -40,7 +40,7 @@
 </head>
 <body>
 
-<!-- <h1>Выбор организации для номера {{ number }}</h1> -->
+
 
 
 
@@ -54,7 +54,7 @@
 
 
     <input type="hidden" name="number" value="{{ number }}">
-    <input type="text" name="search" value="{{ search_query }}" placeholder="Название или id организации">
+    <input type="text" name="search" value="{{ search_query }}" placeholder="Название организации">
     <button class="search-button" type="submit">Искать</button>
 </form>
 
@@ -63,7 +63,7 @@
 {% for org in organizations %}
     <div class="organizations-container">
         <span>{{ loop.index }}. {{ org[1] }}</span>
-        <button class="copy_button" onclick="generateAndCopyLink('{{ number }}', '{{ org[0] }}')"></button>
+        <button class="copy_button" onclick="generateAndCopyLink('{{ number }}', '{{ org[0] }}', '{{ token }}')"></button>
     </div>
 {% endfor %}
 
