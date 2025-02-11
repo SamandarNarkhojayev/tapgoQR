@@ -1,5 +1,5 @@
 import re
-from flask import Flask, render_template, request, jsonify, Response, redirect, url_for, session, flash,send_file
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 from flask_caching import Cache
 import psycopg2
 from psycopg2 import OperationalError
@@ -7,15 +7,14 @@ import qrcode
 import io
 import base64
 from flask_socketio import SocketIO, emit, join_room
-from babel.dates import format_date
-from datetime import datetime
+# from babel.dates import format_date
+# from datetime import datetime
 import locale
 from datetime import datetime, timedelta
 from PIL import Image
 import os
 import dotenv
 dotenv.load_dotenv()
-import pytz
 import secrets
 
 locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
