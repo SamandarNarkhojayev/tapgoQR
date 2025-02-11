@@ -6,49 +6,51 @@
     <title>success</title>
     <link rel="stylesheet" href="/static/styles.css">
     <meta http-equiv="refresh" content="3;url=/">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let audio = document.getElementById("success-sound");
+            if (audio) {
+                audio.play().catch(error => console.log("Ошибка воспроизведения:", error));
+            }
+        });
+    </script>
 </head>
 <body>
+
+    <audio id="success-sound" src="{{ url_for('static', filename='sounds/success.mp3') }}"></audio>
     
     <div class="Container">
-        <div class="top">
-    
-                <!-- Иконка истории -->
-                <img class="historyIcon" src="{{ url_for('static', filename='images/history.png') }}" alt="Example Image">
+        
+
+        <div class="Main"> 
+
+              <!-- Контейнер для фона SVG и GIF -->
+    <div class="circleIcon">
+        <!-- Фоновое изображение SVG -->
+        <div class="svgBackground"></div>
+        <!-- GIF изображение -->
+        <img class="gifIcon" src="{{ url_for('static', filename='images/okay.gif') }}" alt="Example Image">
+    </div>
             
-        </div>
-
-            <div class="Main"> 
-
-                  <!-- Контейнер для фона SVG и GIF -->
-        <div class="circleIcon">
-            <!-- Фоновое изображение SVG -->
-            <div class="svgBackground"></div>
-            <!-- GIF изображение -->
-            <img class="gifIcon" src="{{ url_for('static', filename='images/okay.gif') }}" alt="Example Image">
-        </div>
-                
-                <div>
-                    <h1> Успешно!</h1>
-                    <h3>
-                        Добро пожаловать в
-                    </h3>
-                    <h3 class="organization-name">
-                        {{ client_first_name }}
-                    </h3>
-                </div>
-
-            
-                <button class="button_go-home">
-                   На главную
-                </button>
+            <div>
+                <h1 class="other-text"> Успешно!</h1>
+                <h3 class="other-text">
+                    Добро пожаловать 
+                </h3>
+                <h2 class="organization-name">
+                   {{ client_first_name }} {{client_last_name}}
+                </h2>
+                <h4 class="other-text">
+                    {{ visit_time }}
+                </h4>
             </div>
 
-       
-    </div>
+        
+        </div>
 
+   
+</div>
 
-
-    <!-- {{ place_name }} -->
   
 </body>
 </html>

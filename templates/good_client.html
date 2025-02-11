@@ -5,9 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>success</title>
     <link rel="stylesheet" href="/static/styles.css">
-
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let audio = document.getElementById("success-sound");
+            if (audio) {
+                audio.play().catch(error => console.log("Ошибка воспроизведения:", error));
+            }
+        });
+    </script>
 </head>
 <body>
+    <audio id="success-sound" src="{{ url_for('static', filename='sounds/success.mp3') }}"></audio>
     
     <div class="Container">
         
@@ -25,10 +33,10 @@
                 <div>
                     <h1 class="other-text"> Успешно!</h1>
                     <h3 class="other-text">
-                        Добро пожаловать в
+                        Добро пожаловать 
                     </h3>
                     <h2 class="organization-name">
-                        {{ organization_name }}
+                        {{ client_first_name}} {{ client_last_name }}
                     </h2>
                     <h4 class="other-text">
                         {{ visit_time }}

@@ -31,6 +31,7 @@ active_tokens = {}  # Текущие активные токены для орг
 used_tokens = set()  # Уже использованные токены
 admin_status = {}  # Статус подтверждения клиента
 
+print(used_tokens)
 
 # Подключение к базе данных для авторизации (для проверки данных входа)
 def get_auth_db_connection():
@@ -144,11 +145,9 @@ def client():
     org_id = request.args.get("org_id")
     token = request.args.get("token")
 
-    if not org_id or not token:
-        return jsonify({"error": "Недействительный QR-код"}), 400
+    if not org_id or not token or token in used_tokens:
+        return render_template('client.html', error="Недействительный QR-код"), 400
 
-    if token in used_tokens:
-        return jsonify({"error": "Токен уже использован"}), 403
 
     phone_number = request.form.get("phone_number") or request.args.get("number")
 
@@ -220,10 +219,40 @@ def good_client(visit_id):
     else:
         return "<h1>Ошибка: не найдено посещение!</h1>", 404
 
-@app.route("/good/<visit_id>")
+# @app.route("/good/<visit_id>")
+# def good(visit_id):
+#     # Обработка успешного визита
+#     return render_template("good.html", visit_id=visit_id)
+
+
+@app.route('/good/<int:visit_id>', methods=['GET'])
 def good(visit_id):
-    # Обработка успешного визита
-    return render_template("good.html", visit_id=visit_id)
+    conn = get_auth_db_connection()
+    cursor = conn.cursor()
+    
+    # Получаем данные о посещении, организации и времени
+    cursor.execute("""
+        SELECT v.client_first_name, v.client_last_name, o.name, v.visit_time
+        FROM visits v
+        JOIN organizations o ON v.organization_id = o.id
+        WHERE v.id = %s
+    """, (visit_id,))
+    
+    visit_data = cursor.fetchone()
+    conn.close()
+
+    if visit_data:
+        client_first_name, client_last_name, organization_name, visit_time = visit_data
+        # Преобразуем время в нужный формат
+        visit_time = visit_time.strftime('%Y-%m-%d %H:%M:%S')
+        return render_template('good.html', visit_id=visit_id, 
+                               client_first_name=client_first_name, 
+                               client_last_name=client_last_name, 
+                               organization_name=organization_name,
+                               visit_time=visit_time)
+    else:
+        return "<h1>Ошибка: не найдено посещение!</h1>", 404
+
 
 
 
