@@ -1,4 +1,5 @@
 import re
+from flask_cors import CORS
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 from flask_caching import Cache
 import psycopg2
@@ -7,8 +8,8 @@ import qrcode
 import io
 import base64
 from flask_socketio import SocketIO, emit, join_room
-# from babel.dates import format_date
-# from datetime import datetime
+from babel.dates import format_date
+from datetime import datetime
 import locale
 from datetime import datetime, timedelta
 from PIL import Image
@@ -22,6 +23,7 @@ locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
+CORS(app, origins="*", supports_credentials=True)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 cache = Cache(app, config={"CACHE_TYPE": "simple"})
@@ -91,7 +93,7 @@ def admin_qr():
         active_tokens[organization_id] = token
         admin_status[organization_id] = False  # Сбрасываем статус админа
 
-    qr_data = f"http://127.0.0.1:8080/client?token={active_tokens[organization_id]}&org_id={organization_id}"
+    qr_data = f"https://tapgolive.kz/client?token={active_tokens[organization_id]}&org_id={organization_id}"
 
     # Создаем QR-код с высокой коррекцией ошибок
     qr = qrcode.QRCode(
