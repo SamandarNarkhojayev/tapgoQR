@@ -165,7 +165,8 @@ def client():
                 if user and organization:
                     user_id, first_name, last_name, end_subscription = user
                     if end_subscription and end_subscription.date() < datetime.now().date():
-                        return jsonify({"error": "Абонемент завершен!"}), 400
+                        return render_template('client.html', error="У вас закончился абонимент"), 400
+                    
 
                     # Записываем посещение
                     cursor.execute(
@@ -184,7 +185,7 @@ def client():
 
                     return redirect(url_for("good_client", visit_id=visit_id))
                 else:
-                    return jsonify({"error": "Клиент или организация не найдены"}), 404
+                    return render_template('client.html', error="Не верный номер телефона"), 400
 
     return render_template("client.html", org_id=org_id)
 
