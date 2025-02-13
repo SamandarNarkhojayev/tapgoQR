@@ -18,146 +18,200 @@
             font-size: 16px;
             z-index: 1000;
         }
+        
+        /* Стили для модального окна */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .modal button {
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+            color: white;
+            transition: transform 0.2s ease; /* Плавный переход */
+
+        }
+        .yes{
+            background-color: #37c350
+        }
+        .yes:hover{
+            background-color: #268738;
+            transform: scale(1.2); /* Увеличение на 20% */
+
+        }
+        .no{
+            background-color: #c33737
+        }
+        .no:hover{
+            transform: scale(1.2); /* Увеличение на 20% */
+            background-color: #851111
+        }
     </style>
     <script>
-        function generateAndCopyLink(number, orgId, token) {
+        function generateAndRedirectLink(number, orgId, token) {
             // Генерация ссылки
             const clientUrl = `${window.location.origin}/client?number=${number}&org_id=${orgId}&token=${token}`;
             
-            // Используем Clipboard API для копирования
-            navigator.clipboard.writeText(clientUrl).then(() => {
-                // Показать уведомление
-                const feedback = document.getElementById('copy-feedback');
-                feedback.style.display = 'block';
+            // Показать модальное окно с вопросом
+            const modal = document.getElementById('confirmation-modal');
+            modal.style.display = 'flex';
+            
+            // Сохранение ссылки в data-атрибут для последующего использования
+            modal.dataset.link = clientUrl;
+        }
 
-                // Скрыть уведомление через 2 секунды
-                setTimeout(() => {
-                    feedback.style.display = 'none';
-                    location.reload();
+        // Обработчик для кнопки "Да" в модальном окне
+        function confirmAndRedirect() {
+            const modal = document.getElementById('confirmation-modal');
+            const clientUrl = modal.dataset.link;
+            
+            // Закрытие модального окна
+            modal.style.display = 'none';
+            
+            // Переход на сгенерированную ссылку
+            window.location.href = clientUrl;
+        }
 
-                }, 2000);
-            });
+        // Обработчик для кнопки "Нет" в модальном окне
+        function cancel() {
+            const modal = document.getElementById('confirmation-modal');
+            modal.style.display = 'none';  // Закрыть модальное окно
         }
     </script>
 </head>
 <body>
 
-
-
-
-
 <form method="GET" action="{{ url_for('select_organization') }}">
 
     <h1>{{client_name}}</h1>
-        <a href="/select_number">
-            <img class="logout" src="{{ url_for('static', filename='images/close.svg') }}" alt="close">
-        </a>
-        </div>
-
+    <a href="/select_number">
+        <img class="logout" src="{{ url_for('static', filename='images/close.svg') }}" alt="close">
+    </a>
 
     <input type="hidden" name="number" value="{{ number }}">
     <input type="text" name="search" value="{{ search_query }}" placeholder="Название организации">
     <button class="search-button" type="submit">Искать</button>
 </form>
 
-
 <!-- Список организаций -->
 {% for org in organizations %}
     <div class="organizations-container">
         <span>{{ loop.index }}. {{ org[1] }}</span>
-        <button class="copy_button" onclick="generateAndCopyLink('{{ number }}', '{{ org[0] }}', '{{ token }}')"></button>
+        <button class="copy_button" onclick="generateAndRedirectLink('{{ number }}', '{{ org[0] }}', '{{ token }}')">Записать</button>
     </div>
 {% endfor %}
 
-<!-- Уведомление об успешном копировании -->
-<div id="copy-feedback" class="copy-feedback">Ссылка скопирована!</div>
+<!-- Модальное окно с подтверждением -->
+<div id="confirmation-modal" class="modal">
+    <div class="modal-content">
+        <p>Вы уверены?</p>
+        <button class="yes" onclick="confirmAndRedirect()">Да</button>
+        <button class="no" onclick="cancel()">Нет</button>
+    </div>
+</div>
 
 <style>
-          @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-        * {
+    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+    * {
         font-weight: 500;
         font-family: 'Inter', sans-serif;  
-        }
+    }
 
-       html, body {
+    html, body {
         height: 100%;
         margin: 0;
         padding: 0;
-        }
+    }
 
-      
-        .name_and_logout{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .logout {
+    .name_and_logout {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .logout {
         position: absolute;
         right: 10px;
         top: 15px;
         width: clamp(30px, 5vw, 70px);
         cursor: pointer;
-        }
-        
-       
-        h1{
-            color: white;
-        }
+    }
 
-        form{
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #37c350;
-            padding-block: 30px;
+    h1 {
+        color: white;
+    }
 
-        }
-        span{
-            font-size: clamp(20px, 3vw, 5vw);
-            font-weight: 400;
-        }
-        input{
-            padding-block: 15px;
-            border: none;
-            border-radius: 10px;
-            width: 70%;
-            font-size: 16px;
-        }
-        input::placeholder{
-            color: grey;
-            padding-left: 10px;
-        }
-        .search-button{
-            background-color: #fed42a;
-            border: none;
-            width: max-content;
-            padding-inline: 70px;
-            padding-block: 15px;
-            margin-top: 30px;
-            font-size: 20px;
-            border-radius: 10px;
-        }
-        .copy_button{
-            background-image: url(../static/images/copy-alt.png);
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            width: 40px;
-            height: 40px;
-            border: none;
-            cursor: pointer;
-            background-color: transparent;
-        }
-        .organizations-container{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-inline: 30px;
-            padding-block: 10px ;
-            border-bottom: 1px solid grey;
-            margin-inline: 4vw;
-        }
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #37c350;
+        padding-block: 30px;
+    }
+    span {
+        font-size: clamp(20px, 3vw, 5vw);
+        font-weight: 400;
+    }
+    input {
+        padding-block: 15px;
+        border: none;
+        border-radius: 10px;
+        width: 70%;
+        font-size: 16px;
+    }
+    input::placeholder {
+        color: grey;
+        padding-left: 10px;
+    }
+    .search-button {
+        background-color: #fed42a;
+        border: none;
+        width: max-content;
+        padding-inline: 70px;
+        padding-block: 15px;
+        margin-top: 30px;
+        font-size: 20px;
+        border-radius: 10px;
+    }
+    .copy_button {
+       padding-block: 5px;
+       padding-inline: 15px;
+       border-radius: 10px;
+       color: aliceblue;
+        border: none;
+        cursor: pointer;
+        background-color: #37c350;
+      font-size: clamp(14px, 2vw, 40px);
 
+    }
+    .organizations-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-inline: 30px;
+        padding-block: 10px ;
+        border-bottom: 1px solid grey;
+        margin-inline: 4vw;
+    }
 </style>
+
 </body>
 </html>

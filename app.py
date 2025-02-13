@@ -93,7 +93,7 @@ def admin_qr():
         active_tokens[organization_id] = token
         admin_status[organization_id] = False  # Сбрасываем статус админа
 
-    qr_data = f"https://22a1-2-134-191-217.ngrok-free.app/client?token={active_tokens[organization_id]}&org_id={organization_id}"
+    qr_data = f"https://tapgolive.kz/client?token={active_tokens[organization_id]}&org_id={organization_id}"
 
     # Создаем QR-код с высокой коррекцией ошибок
     qr = qrcode.QRCode(
