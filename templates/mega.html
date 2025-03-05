@@ -13,13 +13,6 @@
 <div class="Global">
 
 
-
-        <!-- <video class="reklama" autoplay loop muted playsinline>
-            <source src="{{ url_for('static', filename='videos/reklama.mov') }}" type="video/mp4">
-            Ваш браузер не поддерживает видео.
-        </video>
-         -->
-
          <video class="bg-blur" autoplay loop muted playsinline>
             <source src="{{ url_for('static', filename='videos/reklama.mov') }}" type="video/mp4">
         </video>
@@ -52,7 +45,7 @@
 
 </div>
     
-    <style>
+<style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 
@@ -109,12 +102,7 @@
         .error {
             color: red;
         }
-        
-        /* .Global{
-            display: flex;
-            height: 100vh;
-            width: 100vw;
-        } */
+    
         
         .Container {
             display: flex;
@@ -125,13 +113,7 @@
             width: 50vw;
 
         }
-        /* .reklama{
-            width: 50vw;
-            height: 100vh; 
-            object-fit: contain; 
-            flex: 1;
-        }
-      */
+
 
     
         
@@ -206,13 +188,10 @@
                 height:clamp(320px, 60vw, 65vw);
             }
         }
-        </style>
+</style>
 
 
-<script>
-    const reklama = document.querySelector('.reklama');
-console.log('Ширина:', reklama.clientWidth, 'px');
-console.log('Высота:', reklama.clientHeight, 'px');
+
 
 </script>
 </body>
