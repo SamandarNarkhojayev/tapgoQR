@@ -441,7 +441,7 @@ def playpark_plaza():
 
 @app.route('/playpark-mega')
 def playpark_mega():
-    return render_template('Mega.html')
+    return render_template('mega.html')
 
 
 if __name__ == '__main__':
