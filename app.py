@@ -435,6 +435,14 @@ def generate_link():
         
 
 
+@app.route('/playpark-plaza')
+def playpark_plaza():
+    return render_template('shymkentPlaza.html')
+
+@app.route('/playpark-mega')
+def playpark_mega():
+    return render_template('Mega.html')
+
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, host="0.0.0.0", port=8000)
