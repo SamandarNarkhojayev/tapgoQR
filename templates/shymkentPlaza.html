@@ -34,9 +34,7 @@
 
                 
                 <img class="qr" src="{{ url_for('static', filename='images/shymkent_plaza.png') }}" alt="Example Image">
-
-                
-                <div id="status"></div>
+                <!-- <div class="qr-bg"></div> -->
 
 
             </div>
@@ -55,6 +53,17 @@
     height: 100vh;
     overflow: hidden;
     display: flex;
+}
+.qr-bg{
+    background-color: #f7f7f7;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(10px); /* Размытие */
+    z-index: -1;
 }
 
 .bg-blur {
@@ -118,10 +127,15 @@
     
         
         .Main{
+            padding-top: 10%;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
+            background-color: rgb(255, 255, 255); /* Белый цвет с некоторой прозрачностью */
+            backdrop-filter: blur(20px); /* Размытие */
+            width: 100%;
+            height: 100%;
 
         }
         .qr{
