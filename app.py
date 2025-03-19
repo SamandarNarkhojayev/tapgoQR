@@ -443,6 +443,10 @@ def playpark_plaza():
 def playpark_mega():
     return render_template('mega.html')
 
+@app.route('/fonkytown-plaza')
+def fonkytown_plaza():
+    return render_template('shymkentPlazaFonkyTown.html')
+
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, host="0.0.0.0", port=8000)
