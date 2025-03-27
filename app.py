@@ -437,11 +437,11 @@ def generate_link():
 
 @app.route('/playpark-plaza')
 def playpark_plaza():
-    return render_template('shymkentPlaza.html')
+    return render_template('Play_park_shymkentPlaza.html')
 
 @app.route('/playpark-mega')
 def playpark_mega():
-    return render_template('mega.html')
+    return render_template('Play_park_mega.html')
 
 @app.route('/fonkytown-plaza')
 def fonkytown_plaza():
