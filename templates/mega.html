@@ -4,206 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Планшет</title>
-
 </head>
 <body>
-
-
-
 <div class="Global">
-
-
-         <video class="bg-blur" autoplay loop muted playsinline>
-            <source src="{{ url_for('static', filename='videos/reklama.mov') }}" type="video/mp4">
-        </video>
-    
-        <!-- Основное видео -->
-        <video class="reklama" autoplay loop muted playsinline>
-            <source src="{{ url_for('static', filename='videos/reklama.mov') }}" type="video/mp4">
-        </video>
-
-
-    
-
-    
+    <video class="bg-blur" loop muted playsinline preload="auto">
+        <source src="{{ url_for('static', filename='videos/reklama_300kbps.mp4') }}" type="video/mp4">
+    </video>
+    <video class="reklama" loop muted playsinline preload="auto">
+        <source src="{{ url_for('static', filename='videos/reklama_800kbps.mp4') }}" type="video/mp4">
+    </video>
     <div class="Container">
-
-            <div class="Main"> 
-
-                <h1 class="title"> Отсканируйте <br> QR-код</h1>
-
-                
-                <img class="qr" src="{{ url_for('static', filename='images/mega.png') }}" alt="Example Image">
-                <!-- <div class="qr-bg"></div> -->
-
-
-            </div>
-
+        <div class="Main">
+            <h1 class="title">Отсканируйте <br> QR-код</h1>
+            <img class="qr" src="{{ url_for('static', filename='images/mega.png') }}" alt="Example Image">
         </div>
-
+    </div>
 </div>
-    
+
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-
-
-    .Global {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    display: flex;
-}
-.qr-bg{
-    background-color: #f7f7f7;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: blur(10px); /* Размытие */
-    z-index: -1;
-}
-
-.bg-blur {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: blur(20px); /* Размытие */
-    z-index: -1;
-}
-
-.reklama {
-    width: 50vw; /* Половина экрана */
-    height: 100vh;
-    object-fit: contain; /* Сохраняет пропорции */
-    position: relative;
-    z-index: 1;
-}
-
-        html, body {
-            overflow: hidden;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-        
-        * {
-            font-weight: 400;
-        font-family: 'Inter', sans-serif;  
-            
-        }
-        
-        #status {
-            margin-top: 30px;
-            font-size: clamp(16px, 5vw, 70px);
-            text-align: center;
-        }
-        
-        .success {
-            color: green;
-        }
-        
-        .error {
-            color: red;
-        }
-    
-        
-        .Container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center; 
-
-            align-items: center;
-            width: 50vw;
-
-        }
-
-
-    
-        .Main{
-            padding-top: 10%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            background-color: #3a3737; /* Белый цвет с некоторой прозрачностью */
-            width: 100%;
-            height: 100%;
-        }
-        .qr{
-            width: clamp(200px, 40vw, 450px);
-            height: clamp(200px, 40vw, 450px);
-        }
-        h1{
-            font-size: clamp(25px, 4vw, 40px);
-            text-align: center;
-            font-weight: 600;
-            color: aliceblue;
-        }
-        
-        .title{
-            font-size: clamp(25px, 5vw, 60px);
-            font-weight: 600;
-            margin: 0;
-
-        }
-        
-        .top {
-            display: flex;
-            flex-direction: row;
-            justify-content: end;
-            align-items: center;
-        } 
-            
-        .historyIcon {
-            width: clamp(30px, 4vw, 50px);
-            height: clamp(30px, 4vw, 50px);
-            margin-inline-end: 10px;
-        } 
-        
-        .logoutButton {
-            margin-left: 0px;
-        }
-        
-        
-        
-        button{
-            font-size: clamp(16px, 3vw, 40px);
-            border: none;
-            background-color: #0cdd79;
-            background-size: contain ;
-            background-repeat: no-repeat;
-            background-position: 15px;
-            background-size: clamp(20px, 3vw, 50px);
-            border-radius: 10px;
-            color: white;
-            padding-inline: 45px;
-            padding-block: 20px;
-        }
-        .button_join-onphone{
-            background-color: #f7f7f7;
-        }
-        
-        .another{
-            font-size: clamp(16px, 3vw, 40px);
-        }
-
-        @media (max-width: 400px) {
-            .qr {
-                width:clamp(320px, 60vw, 65vw);
-                height:clamp(320px, 60vw, 65vw);
-            }
-        }
+    .Global { position: relative; width: 100vw; height: 100vh; overflow: hidden; display: flex; }
+    .bg-blur { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(5px); z-index: -1; }
+    .reklama { width: 50vw; height: 100vh; object-fit: contain; position: relative; z-index: 1; }
+    html, body { overflow: hidden; height: 100%; margin: 0; padding: 0; }
+    * { font-weight: 400; font-family: 'Inter', sans-serif; }
+    .Container { display: flex; flex-direction: column; justify-content: center; align-items: center; width: 50vw; }
+    .Main { padding-top: 10%; display: flex; flex-direction: column; align-items: center; text-align: center; background-color: #3a3737; width: 100%; height: 100%; }
+    .qr { width: clamp(200px, 40vw, 450px); height: clamp(200px, 40vw, 450px); }
+    h1 { font-size: clamp(25px, 4vw, 40px); text-align: center; font-weight: 600; color: aliceblue; }
+    .title { font-size: clamp(25px, 5vw, 60px); font-weight: 600; margin: 0; }
 </style>
 
+<script>
+    console.log('Скрипт запущен'); // Проверка, работает ли скрипт
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then((registration) => console.log('Service Worker зарегистрирован:', registration.scope))
+                .catch((error) => console.log('Ошибка регистрации Service Worker:', error));
+        });
+    }
 
+    const mainVideo = document.querySelector('.reklama');
+    const bgVideo = document.querySelector('.bg-blur');
 
+    let mainReady = false;
+    let bgReady = false;
+    let hasPlayed = false;
 
+    mainVideo.addEventListener('canplaythrough', () => {
+        mainReady = true;
+        startVideos();
+    });
+
+    bgVideo.addEventListener('canplaythrough', () => {
+        bgReady = true;
+        startVideos();
+    });
+
+    function startVideos() {
+        if (mainReady && bgReady && !hasPlayed) {
+            setTimeout(() => {
+                mainVideo.play();
+                bgVideo.play();
+                hasPlayed = true;
+                console.log('Видео запущены'); // Проверка запуска
+            }, 500);
+        }
+    }
+
+    mainVideo.addEventListener('waiting', () => console.log('Основное видео ждёт буферизацию, время:', mainVideo.currentTime));
+    bgVideo.addEventListener('waiting', () => console.log('Фоновое видео ждёт буферизацию, время:', bgVideo.currentTime));
 </script>
 </body>
 </html>
